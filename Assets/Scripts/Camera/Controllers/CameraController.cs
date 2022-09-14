@@ -72,7 +72,7 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (currentAnchor != null)
+       if (currentAnchor != null)
         {
             FollowAnchor();
         }
@@ -80,21 +80,14 @@ public class CameraController : MonoBehaviour
         {
             LookAtTarget();
         }
-        /*        if(Input.GetKeyDown(KeyCode.A) && !isMoving)
-                {
-                    StartCoroutine(MoveCameraSmooth(currentCamera.transform.position, Vector3.zero + currentOffset, currentCamera.transform.rotation, Quaternion.identity, false, 4f));
-                }*/
-        /*        if (Input.GetKeyDown(KeyCode.R) && !isMoving)
-                {
-                    TeleportCamera(Vector3.zero + currentOffset, Quaternion.identity, null);
-                }*/
+
         if (Input.GetKeyDown(KeyCode.E) && !isMoving)
         {
             StartCoroutine(AttachCamera(testAnchor,null, Vector3.zero, 1f));
         }
-/*        if (Input.GetKeyDown(KeyCode.T) && !isMoving)
+        /*if (Input.GetKeyDown(KeyCode.T) && !isMoving)
         {
-            StartCoroutine(MoveCameraPath(startpos, endpos, startrot, endrot, attached, time, waitingTime));
+            StartCoroutine(MoveCameraPath(startpos, endpos, startrot, endrot,, time, waitingTime));
         }*/
         if ( Input.GetKey(KeyCode.X))
         {
@@ -159,7 +152,6 @@ public class CameraController : MonoBehaviour
             Quaternion horizontalRotation = Quaternion.AngleAxis(rightward, Vector3.up);
             currentRotation = verticalRotation * horizontalRotation * currentRotation;
         }
-
     }
 
     private void MoveCamera(Vector3 movement)
@@ -210,7 +202,6 @@ public class CameraController : MonoBehaviour
             currentOffset = currentPosition - currentTarget.position;
             currentPosition = currentTarget.position;
         }
-
     }
 
     private void FollowAnchor()

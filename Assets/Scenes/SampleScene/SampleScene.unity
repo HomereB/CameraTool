@@ -608,7 +608,7 @@ MonoBehaviour:
   standardCameraMovementSpeed: 1
   standardCameraRotationSpeed: 0.3
   currentAnchor: {fileID: 2074167042}
-  currentTarget: {fileID: 1688866216}
+  currentTarget: {fileID: 1677556837}
   currentPosition: {x: 0, y: 0, z: 0}
   currentOffset: {x: 0, y: 0, z: 0}
   currentRotation: {x: 0, y: 0, z: 0, w: 0}
@@ -618,7 +618,7 @@ MonoBehaviour:
   verticalRotationThresholdDown: 20
   minZoomThreshold: 2
   maxZoomThreshold: 15
-  currentCamera: {fileID: 0}
+  currentCamera: {fileID: 963194227}
   testAnchor: {fileID: 2074167042}
   startpos:
   - {x: 5, y: 5, z: 5}
