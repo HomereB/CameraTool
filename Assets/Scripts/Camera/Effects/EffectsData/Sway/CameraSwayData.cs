@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CameraSwayData", menuName = "ScriptableObjects/CameraEffect/CameraSway", order = 2)]
+[CreateAssetMenu(fileName = "CameraSwayData", menuName = "ScriptableObjects/Camera/CameraEffect/CameraSway", order = 2)]
 
 public class CameraSwayData : CameraEffectData
 {

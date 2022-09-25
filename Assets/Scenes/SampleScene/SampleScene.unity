@@ -345,8 +345,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06025dab42af65045ae70908b60916db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  standardCameraMovementSpeed: 1
-  standardCameraRotationSpeed: 0.1
+  cameraData: {fileID: 0}
+  currentCamera: {fileID: 0}
   currentAnchor: {fileID: 0}
   currentTarget: {fileID: 0}
   currentPosition: {x: 0, y: 0, z: 0}
@@ -354,11 +354,10 @@ MonoBehaviour:
   currentRotation: {x: 0, y: 0, z: 0, w: 0}
   currentDisplacement: {x: 0, y: 0, z: 0}
   currentSway: {x: 0, y: 0, z: 0, w: 0}
-  verticalRotationThresholdUp: 160
-  verticalRotationThresholdDown: 20
-  minZoomThreshold: 0
-  maxZoomThreshold: 0
-  currentCamera: {fileID: 0}
+  isTraveling: 0
+  movementInput: {x: 0, y: 0, z: 0}
+  rotationInput: {x: 0, y: 0, z: 0}
+  zoomInput: 0
   testAnchor: {fileID: 0}
   startpos: []
   endpos: []
@@ -587,7 +586,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 4.27, z: -14.11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -605,20 +604,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06025dab42af65045ae70908b60916db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  standardCameraMovementSpeed: 1
-  standardCameraRotationSpeed: 0.3
-  currentAnchor: {fileID: 2074167042}
+  cameraData: {fileID: 11400000, guid: a2dbf54fc360ced4084cc8a3520a7a2c, type: 2}
+  currentCamera: {fileID: 963194227}
+  currentAnchor: {fileID: 0}
   currentTarget: {fileID: 1677556837}
   currentPosition: {x: 0, y: 0, z: 0}
   currentOffset: {x: 0, y: 0, z: 0}
   currentRotation: {x: 0, y: 0, z: 0, w: 0}
   currentDisplacement: {x: 0, y: 0, z: 0}
   currentSway: {x: 0, y: 0, z: 0, w: 0}
-  verticalRotationThresholdUp: 160
-  verticalRotationThresholdDown: 20
-  minZoomThreshold: 2
-  maxZoomThreshold: 15
-  currentCamera: {fileID: 963194227}
+  isTraveling: 0
+  movementInput: {x: 0, y: 0, z: 0}
+  rotationInput: {x: 0, y: 0, z: 0}
+  zoomInput: 0
   testAnchor: {fileID: 2074167042}
   startpos:
   - {x: 5, y: 5, z: 5}
