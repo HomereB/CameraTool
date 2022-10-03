@@ -29,7 +29,7 @@ public class CameraTargetingState : CameraBaseState
 
     public override void UpdateState()
     {
-        Context.LookAtTarget();
+        Context.LookAtPosition(Context.CurrentTarget.position);
         CheckSwitchState();
     }
 }

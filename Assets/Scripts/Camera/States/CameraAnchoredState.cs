@@ -51,6 +51,7 @@ public class CameraAnchoredState : CameraBaseState
 
     public override void UpdateState()
     {
+        Context.CurrentAnchor.MoveCameraAnchor(Context.MovementInput);
         Context.FollowAnchor();
         CheckSwitchState();
     }

@@ -14,12 +14,11 @@ public class CameraFreeLookingState : CameraBaseState
 
     public override void EnterState()
     {
-        Debug.Log("nik");
+
     }
 
     public override void ExitState()
     {
-        Debug.Log("toi");
 
     }
 

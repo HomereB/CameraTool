@@ -13,7 +13,7 @@ public class CameraController : MonoBehaviour
     //Target & Anchor
 
     [SerializeField]
-    Transform currentAnchor;
+    CameraAnchor currentAnchor;
     [SerializeField]
     Transform currentTarget;
 
@@ -43,7 +43,7 @@ public class CameraController : MonoBehaviour
 
     //Test data (will disappear)
 
-    public Transform testAnchor;
+    public CameraAnchor testAnchor;
     public List<Vector3> startpos;
     public List<Vector3> endpos;
     public List<Quaternion> startrot;
@@ -64,7 +64,7 @@ public class CameraController : MonoBehaviour
     //Get & Set
 
     public CameraBaseState CurrentState { get => currentState; set => currentState = value; }
-    public Transform CurrentAnchor { get => currentAnchor; set => currentAnchor = value; }
+    public CameraAnchor CurrentAnchor { get => currentAnchor; set => currentAnchor = value; }
     public Transform CurrentTarget { get => currentTarget; set => currentTarget = value; }
     public Vector3 CurrentOffset { get => currentOffset; set => currentOffset = value; }
     public Vector3 CurrentPosition { get => currentPosition; set => currentPosition = value; }
@@ -78,20 +78,11 @@ public class CameraController : MonoBehaviour
     {
         currentCamera = gameObject.GetComponent<Camera>();
         
-        cameraStates = new CameraStateManager(this);
-
-        InitialStateConfiguration();
-
         currentPosition = currentCamera.transform.position;
-        currentRotation = currentCamera.transform.rotation;
-        if(currentTarget != null)
-        {
-            LockToTarget(currentTarget);
-        }
-        if (currentAnchor != null)
-        {
-            AttachToAnchor(currentAnchor, Vector3.zero, Quaternion.LookRotation(currentAnchor.position, Vector3.up), 0f);
-        }
+        currentRotation = currentCamera.transform.rotation; 
+        
+        cameraStates = new CameraStateManager(this);
+        InitialStateConfiguration();
     }
 
     void InitialStateConfiguration() 
@@ -109,15 +100,6 @@ public class CameraController : MonoBehaviour
         movementInput = Vector3.zero;
         rotationInput = Vector3.zero;
         zoomInput =0f;
-
-        if (currentAnchor != null)
-        {
-            FollowAnchor();
-        }
-        if (currentTarget != null)
-        {
-            LookAtTarget();
-        }
 
         if (Input.GetKeyDown(KeyCode.E) && !isTraveling)
         {
@@ -169,7 +151,7 @@ public class CameraController : MonoBehaviour
             movementInput += Vector3.down;
         }
 
-        Debug.Log(currentState);
+        //Debug.Log(currentState);
         currentState.UpdateStates();
         //TODO : Handle obstacles (raycast probably)
     }
@@ -183,23 +165,22 @@ public class CameraController : MonoBehaviour
 
     public void RotateCamera(Vector2 rotation)
     {
-        Debug.Log("blib");
-
         if (currentTarget == null)
         {
             Vector3 upVector = Vector3.up;
             if (currentAnchor != null)
             {
-                upVector = currentAnchor.up;
+                upVector = currentAnchor.transform.up;
             }
-            float angle = rotation.y * cameraData.standardCameraRotationSpeed * Time.deltaTime;
-            Quaternion verticalRotation = Quaternion.AngleAxis(angle, currentCamera.transform.right);
+            float angleY = rotation.y * cameraData.standardCameraRotationSpeed * Time.deltaTime;
+            Quaternion verticalRotation = Quaternion.AngleAxis(angleY, currentCamera.transform.right);
             float previewedAngle = Vector3.Angle(verticalRotation * currentCamera.transform.forward, upVector);
-            if (previewedAngle > cameraData.verticalRotationThresholdUp || previewedAngle < cameraData.verticalRotationThresholdDown)
+            if (previewedAngle > cameraData.verticalRotationThresholdUp || previewedAngle < cameraData.verticalRotationThresholdDown) //TODO : better threshold handling
             {
                 verticalRotation = Quaternion.identity;
             }
-            Quaternion horizontalRotation = Quaternion.AngleAxis(rotation.x, Vector3.up);
+            float angleX = rotation.x * cameraData.standardCameraRotationSpeed * Time.deltaTime;
+            Quaternion horizontalRotation = Quaternion.AngleAxis(angleX, Vector3.up);
             currentRotation = verticalRotation * horizontalRotation * currentRotation;
         }
     }
@@ -209,7 +190,6 @@ public class CameraController : MonoBehaviour
         if(currentTarget != null && currentAnchor == null)
         {
             Quaternion horizontalRotation = Quaternion.AngleAxis(rotation.x, currentTarget.up);
-            Debug.Log(horizontalRotation);
             Quaternion verticalRotation = Quaternion.AngleAxis(rotation.y, currentCamera.transform.right);
             float previewedAngle = Vector3.Angle(verticalRotation * currentOffset, currentTarget.up);
             if (previewedAngle > cameraData.verticalRotationThresholdUp || previewedAngle < cameraData.verticalRotationThresholdDown)
@@ -222,7 +202,6 @@ public class CameraController : MonoBehaviour
 
     public void MoveCamera(Vector3 movement)
     {
-        Debug.Log("blub");
         currentPosition += movement * cameraData.standardCameraMovementSpeed * Time.deltaTime;
     }
 
@@ -259,12 +238,12 @@ public class CameraController : MonoBehaviour
         currentSway = sway;
     }
 
-    public void AttachToAnchor(Transform anchor, Vector3 offset, Quaternion rotationOnAttach, float travelTime)
+    public void AttachToAnchor(CameraAnchor anchor, Vector3 offset, Quaternion rotationOnAttach, float travelTime)
     {
         isTraveling = true;
         if(currentMovementCoroutine!=null)
             StopCoroutine(currentMovementCoroutine); 
-        currentMovementCoroutine = MoveCameraTo(transform.position, anchor.position + offset, transform.rotation, rotationOnAttach, anchor, travelTime);
+        currentMovementCoroutine = MoveCameraTo(transform.position, anchor.transform.position + offset, transform.rotation, rotationOnAttach, anchor, travelTime);
         StartCoroutine(currentMovementCoroutine);
     }
 
@@ -277,7 +256,7 @@ public class CameraController : MonoBehaviour
     public void LockToTarget(Transform target)
     {
         currentTarget = target;
-        LookAtTarget();
+        LookAtPosition(target.position);
         if(currentAnchor == null)
         {
             currentOffset = currentPosition - currentTarget.position;
@@ -295,17 +274,17 @@ public class CameraController : MonoBehaviour
     public void FollowAnchor()
     {
         if(currentAnchor!=null)
-            currentPosition = currentAnchor.position;
+            currentPosition = currentAnchor.transform.position;
     }
 
-    public void LookAtTarget()
+    public void LookAtPosition(Vector3 position)
     {
-        Vector3 direction = currentTarget.position - currentCamera.transform.position;
+        Vector3 direction = position - currentCamera.transform.position;
         Quaternion lookRotation = Quaternion.LookRotation(direction);
         currentRotation = lookRotation;
     }
 
-    public void TeleportCamera(Vector3 position, Quaternion rotation, Transform cameraAnchor, Transform cameraTarget)
+    public void TeleportCamera(Vector3 position, Quaternion rotation, CameraAnchor cameraAnchor, Transform cameraTarget)
     {
         currentAnchor = cameraAnchor;
         currentTarget = cameraTarget;
@@ -313,7 +292,7 @@ public class CameraController : MonoBehaviour
         currentRotation = rotation;
     }
 
-    private IEnumerator MoveCameraTo(Vector3 startPosition,Vector3 endPosition, Quaternion startRotation, Quaternion endRotation, Transform cameraAnchor, float time)
+    private IEnumerator MoveCameraTo(Vector3 startPosition,Vector3 endPosition, Quaternion startRotation, Quaternion endRotation, CameraAnchor cameraAnchor, float time)
     {
         isTraveling = true;
 
@@ -327,18 +306,18 @@ public class CameraController : MonoBehaviour
             currentRotation = currentSway * Quaternion.Slerp(startRotation, endRotation, elapsedTime / time);
             yield return null;
         }
-
         currentAnchor = cameraAnchor;
         isTraveling = false;
     }
 
-    private IEnumerator MoveCameraAlongPath(List<Vector3> startPositions, List<Vector3> endPositions, List<Quaternion> startRotations, List<Quaternion> endRotations, List<Transform> cameraAnchors, List<float> time, List<float> waitingTime)
+    public IEnumerator MoveCameraAlongPath(List<Vector3> startPositions, List<Vector3> endPositions, List<Quaternion> startRotations, List<Quaternion> endRotations, List<CameraAnchor> cameraAnchors, List<float> time, List<float> waitingTime)
     {
         currentAnchor = null;
         isTraveling = true;
         for (int i = 0; i < startPositions.Count; i++)
         {
-            StartCoroutine(MoveCameraTo(startPositions[i], endPositions[i], startRotations[i], endRotations[i], cameraAnchors[i], time[i]));
+            currentMovementCoroutine = MoveCameraTo(startPositions[i], endPositions[i], startRotations[i], endRotations[i], cameraAnchors[i], time[i]);
+            StartCoroutine(currentMovementCoroutine);
             yield return new WaitForSeconds(time[i] + waitingTime[i]);
         }
         isTraveling = false;
